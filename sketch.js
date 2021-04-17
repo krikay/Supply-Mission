@@ -1,99 +1,71 @@
-var helicopterIMG, helicopterSprite, packageSprite,packageIMG;
-var packageBody,ground
-const Engine = Matter.Engine;
-const World = Matter.World;
-const Bodies = Matter.Bodies;
-const Body = Matter.Body;
+var canvas;
+var music;
+var block1
+var block2
+var block3
+var block4
+var ball
+var edges
 
-function preload()
-{
-	helicopterIMG=loadImage("helicopter.png")
-	packageIMG=loadImage("package.png")
+function preload(){
+    music = loadSound("music.mp3");
+    
 }
 
-function setup() {
-	createCanvas(800, 700);
-	rectMode(CENTER);
-	
 
-	packageSprite=createSprite(width/2, 80, 10,10);
-	packageSprite.addImage(packageIMG)
-	packageSprite.scale=0.2
+function setup(){
+    canvas = createCanvas(800,600);
 
-	helicopterSprite=createSprite(width/2, 200, 10,10);
-	helicopterSprite.addImage(helicopterIMG)
-	helicopterSprite.scale=0.6
+    //create 4 different surfaces
+block1=createSprite(50,580,250,30);
+block1.shapeColor="blue";
 
-	groundSprite=createSprite(width/2, height-35, width,10);
-	groundSprite.shapeColor=color(255)
+block2=createSprite(285,580,220,30);
+block2.shapeColor="orange";
 
+block3=createSprite(515,580,250,30);
+block3.shapeColor="red";
 
-	engine = Engine.create();
-	world = engine.world;
+block4=createSprite(740,580,250,30);
+block4.shapeColor="green";
 
-	packageBody = Bodies.circle(width/2 , 200 , 5 , {restitution:0.4, isStatic:true});
-	World.add(world, packageBody);
-	
+ball=createSprite(random(20,750),100,40,40);
 
-	//Create a Ground
-	ground = Bodies.rectangle(width/2, 650, width, 10 , {isStatic:true} );
- 	World.add(world, ground);
-
- 	boxPosition=width/2-100
- 	boxY=610;
-
-
- 	boxleftSprite=createSprite(boxPosition, boxY, 20,100);
- 	boxleftSprite.shapeColor=color(255,0,0);
-
- 	boxLeftBody = Bodies.rectangle(boxPosition+20, boxY, 20,100 , {isStatic:true} );
- 	World.add(world, boxLeftBody);
-
- 	boxBase=createSprite(boxPosition+100, boxY+40, 200,20);
- 	boxBase.shapeColor=color(255,0,0);
-
- 	boxBottomBody = Bodies.rectangle(boxPosition+100, boxY+45-20, 200,20 , {isStatic:true} );
- 	World.add(world, boxBottomBody);
-
- 	boxleftSprite=createSprite(boxPosition+200 , boxY, 20,100);
- 	boxleftSprite.shapeColor=color(255,0,0);
-
- 	boxRightBody = Bodies.rectangle(boxPosition+200-20 , boxY, 20,100 , {isStatic:true} );
- 	World.add(world, boxRightBody);
-
-
-	Engine.run(engine);
-  
+    //create box sprite and give velocity
+ball.shapeColor="white"
+ball.setVelocity(4,9)
 }
-
 
 function draw() {
-  rectMode(CENTER);
-  background(0);
- 
-  packageSprite.x= packageBody.position.x 
-  packageSprite.y= packageBody.position.y 
+    background(rgb(169,169,169));
+    //create edgeSprite
+edges=createEdgeSprites();
+ball.bounceOff(edges);
 
-  
-  drawSprites();
-  
-  
+
+
+
+
+//add condition to check if box touching surface and make it box
+if(block1.isTouching(ball)&&ball.bounceOff(block1)){
+    ball.shapeColor="blue";
+    music.play();
 }
-function keyPressed(){
-	if(keyCode==DOWN_ARROW ){
-		Matter.Body.setStatic(packageBody,false)
-	}
-	else if(keyCode==LEFT_ARROW){
-		helicopterSprite.x=helicopterSprite.x-20
-		translation={x:-20,y:0}
-		Matter.Body.translate(packageBody,translation);
-		
-	}
-	else if(keyCode==RIGHT_ARROW){
-		helicopterSprite.x=helicopterSprite.x+20
-		translation={x:20,y:0}
-		Matter.Body.translate(packageBody,translation);
-		
-	}
-	
+
+if(block2.isTouching(ball)){
+    ball.shapeColor="orange";
+    music.stop();
+    ball.setVelocity(0,0);
+}
+
+if(block3.isTouching(ball)&&ball.bounceOff(block3)){
+    ball.shapeColor="red";
+    
+}
+
+if(block4.isTouching(ball)&&ball.bounceOff(block4)){
+    ball.shapeColor="green";
+    
+}
+drawSprites();
 }
